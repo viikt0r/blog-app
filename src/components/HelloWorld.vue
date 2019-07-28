@@ -1,43 +1,39 @@
 <template>
   <div class="hello">
-    <ul>
-      <li v-for="post in posts" :key="post.id">{{post.title}}
-        <div>
-          {{post.id}}
-        </div>
-        <div>
-          {{post.title}}
-        </div>
-        <div>
-          {{post.content}}
-        </div>
-      </li>
-    </ul>
+    
+      <ApolloQuery :query="require('../graphql/getPosts.gql')"
+      :variables="{limit: 1}">
+      <template slot-scope="{result: { data, error, loading }}">
+      <div v-if="loading">Loading...</div>
+      <div v-else-if="error">Error...</div>
+      <ul v-else-if="data"> 
+          <li v-for="post in data.posts" :key="post.id">{{post.title}}
+            <div>
+              {{post.id}}
+            </div>
+            <div>
+              {{post.title}}
+            </div>
+            <div>
+              {{post.content}}
+            </div>
+          </li>
+        </ul>
+        </template>
+      </ApolloQuery>    
   </div>
 </template>
 
 <script>
-import gql from 'graphql-tag';
 export default {
   name: 'HelloWorld',
   data(){
     return {
+      loading: 0,
       posts: []
     }
   },
-  apollo: {
-      getPosts: {
-        query: gql`
-        query {
-          posts {
-            title
-            content
-            id
-          }
-        }
-        `
-      }
-  },
+  
   props: {
     msg: String
   }
